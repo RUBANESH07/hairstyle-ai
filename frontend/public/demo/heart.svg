@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" fill="none">
+  <rect width="120" height="140" fill="#f4f4f5" rx="16"/>
+  <!-- heart-shaped face: wide top, narrow chin -->
+  <path d="M26 42 Q26 28 60 28 Q94 28 94 42 Q98 60 88 80 Q76 100 60 112 Q44 100 32 80 Q22 60 26 42Z"
+    fill="#d4d4d8" stroke="#a1a1aa" stroke-width="2"/>
+  <!-- eyes -->
+  <ellipse cx="46" cy="60" rx="5" ry="3" fill="#71717a"/>
+  <ellipse cx="74" cy="60" rx="5" ry="3" fill="#71717a"/>
+  <!-- nose -->
+  <line x1="60" y1="67" x2="57" y2="76" stroke="#a1a1aa" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="60" y1="67" x2="63" y2="76" stroke="#a1a1aa" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- mouth -->
+  <path d="M52 85 Q60 91 68 85" stroke="#a1a1aa" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <text x="60" y="130" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#71717a">Heart</text>
+</svg>

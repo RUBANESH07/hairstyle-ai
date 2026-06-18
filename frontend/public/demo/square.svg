@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" fill="none">
+  <rect width="120" height="140" fill="#f4f4f5" rx="16"/>
+  <rect x="22" y="28" width="76" height="84" rx="8" fill="#d4d4d8" stroke="#a1a1aa" stroke-width="2"/>
+  <!-- eyes -->
+  <ellipse cx="47" cy="62" rx="5" ry="3" fill="#71717a"/>
+  <ellipse cx="73" cy="62" rx="5" ry="3" fill="#71717a"/>
+  <!-- nose -->
+  <line x1="60" y1="69" x2="57" y2="78" stroke="#a1a1aa" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="60" y1="69" x2="63" y2="78" stroke="#a1a1aa" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- mouth -->
+  <path d="M49 88 Q60 94 71 88" stroke="#a1a1aa" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <text x="60" y="128" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#71717a">Square</text>
+</svg>
