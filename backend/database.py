@@ -1,14 +1,34 @@
 import hashlib
 import secrets
-import sqlite3
 
-from config import DB_PATH, DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_NAME, DEFAULT_ADMIN_PASSWORD
+import psycopg2
+import psycopg2.extras
+
+from config import DATABASE_URL, DEFAULT_ADMIN_EMAIL, DEFAULT_ADMIN_NAME, DEFAULT_ADMIN_PASSWORD
 
 
-def get_db() -> sqlite3.Connection:
-    conn = sqlite3.connect(str(DB_PATH))
-    conn.row_factory = sqlite3.Row
-    return conn
+class DBConnection:
+    """Thin wrapper around psycopg2 that mimics the sqlite3 connection API."""
+
+    def __init__(self, conn):
+        self._conn = conn
+
+    def execute(self, query: str, params=None):
+        query = query.replace("?", "%s")
+        cur = self._conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cur.execute(query, params)
+        return cur
+
+    def commit(self):
+        self._conn.commit()
+
+    def close(self):
+        self._conn.close()
+
+
+def get_db() -> DBConnection:
+    conn = psycopg2.connect(DATABASE_URL)
+    return DBConnection(conn)
 
 
 def _hash_password(password: str) -> str:
@@ -19,49 +39,63 @@ def _hash_password(password: str) -> str:
 
 def init_db() -> None:
     conn = get_db()
-    conn.executescript("""
+
+    conn.execute("""
         CREATE TABLE IF NOT EXISTS users (
-            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            id            SERIAL PRIMARY KEY,
             name          TEXT    NOT NULL,
             email         TEXT    UNIQUE NOT NULL,
             password_hash TEXT    NOT NULL,
             role          TEXT    NOT NULL DEFAULT 'user',
             created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
+        )
+    """)
 
-        CREATE TABLE IF NOT EXISTS analyses (
-            id          INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id     INTEGER NOT NULL,
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS uploaded_images (
+            id          SERIAL PRIMARY KEY,
+            user_id     INTEGER NOT NULL REFERENCES users(id),
+            image_id    TEXT    NOT NULL UNIQUE,
+            filename    TEXT,
+            file_path   TEXT,
+            uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS face_analysis (
+            id          SERIAL PRIMARY KEY,
+            user_id     INTEGER NOT NULL REFERENCES users(id),
             image_id    TEXT    NOT NULL,
             face_shape  TEXT,
             confidence  REAL,
             gender      TEXT,
-            created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id)
-        );
+            created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
     """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS hairstyles (
+            id          SERIAL PRIMARY KEY,
+            face_shape  TEXT    NOT NULL,
+            gender      TEXT    NOT NULL,
+            name        TEXT    NOT NULL,
+            description TEXT,
+            image_url   TEXT,
+            created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
     conn.commit()
 
-    # Add role column if missing (migration for existing DBs)
-    cols = [r[1] for r in conn.execute("PRAGMA table_info(users)").fetchall()]
-    if "role" not in cols:
-        conn.execute("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'")
-        conn.commit()
-
-    # Seed default admin if not exists
     existing = conn.execute(
-        "SELECT id FROM users WHERE email = ?", (DEFAULT_ADMIN_EMAIL,)
+        "SELECT id FROM users WHERE email = %s", (DEFAULT_ADMIN_EMAIL,)
     ).fetchone()
 
     if not existing:
         conn.execute(
-            "INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)",
-            (
-                DEFAULT_ADMIN_NAME,
-                DEFAULT_ADMIN_EMAIL,
-                _hash_password(DEFAULT_ADMIN_PASSWORD),
-                "admin",
-            ),
+            "INSERT INTO users (name, email, password_hash, role) VALUES (%s, %s, %s, %s)",
+            (DEFAULT_ADMIN_NAME, DEFAULT_ADMIN_EMAIL, _hash_password(DEFAULT_ADMIN_PASSWORD), "admin"),
         )
         conn.commit()
         print(f"[DB] Default admin seeded → {DEFAULT_ADMIN_EMAIL}")

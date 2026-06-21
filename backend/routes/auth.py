@@ -25,11 +25,11 @@ def register(body: RegisterRequest):
         raise HTTPException(status_code=409, detail="Email already registered")
 
     cursor = conn.execute(
-        "INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)",
+        "INSERT INTO users (name, email, password_hash, role) VALUES (%s, %s, %s, %s) RETURNING id",
         (body.name.strip(), email, hash_password(body.password), "user"),
     )
     conn.commit()
-    user_id = cursor.lastrowid
+    user_id = cursor.fetchone()["id"]
     conn.close()
 
     token = create_token(user_id, email)

@@ -12,7 +12,7 @@ def get_history(user: dict = Depends(get_current_user)):
     rows = conn.execute(
         """
         SELECT id, image_id, face_shape, confidence, gender, created_at
-        FROM analyses
+        FROM face_analysis
         WHERE user_id = ?
         ORDER BY created_at DESC
         LIMIT 20

@@ -7,6 +7,7 @@ frontend/out/
 backend/__pycache__/
 backend/venv/
 *.pyc
+venv/
 
 # Uploads
 uploads/*

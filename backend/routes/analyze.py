@@ -55,7 +55,11 @@ async def analyze(
 
     conn = get_db()
     conn.execute(
-        "INSERT INTO analyses (user_id, image_id, face_shape, confidence, gender) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO uploaded_images (user_id, image_id, filename, file_path) VALUES (?, ?, ?, ?)",
+        (user["id"], image_id, file.filename, str(image_path)),
+    )
+    conn.execute(
+        "INSERT INTO face_analysis (user_id, image_id, face_shape, confidence, gender) VALUES (?, ?, ?, ?, ?)",
         (user["id"], image_id, face_shape, confidence, gender_key),
     )
     conn.commit()

@@ -3,7 +3,8 @@ from pathlib import Path
 BASE_DIR = Path(__file__).parent
 UPLOAD_DIR = BASE_DIR.parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
-DB_PATH = BASE_DIR / "database.db"
+
+DATABASE_URL = "postgresql://postgres:postgres123@localhost:5432/hairstyle_ai"
 
 SECRET_KEY = "hairstyle-ai-secret-change-in-production"
 ALGORITHM = "HS256"
