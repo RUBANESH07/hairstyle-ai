@@ -37,9 +37,6 @@ const FACE_SHAPES = [
   },
 ];
 
-/* delay[i] positions the cycleShape animation so shape i peaks at t = i*2.5s */
-const SHAPE_DELAYS = ["0s", "-12.5s", "-10s", "-7.5s", "-5s", "-2.5s"];
-
 const STEPS = [
   {
     num: "01",
@@ -81,8 +78,6 @@ const FEATURES = [
   },
 ];
 
-const TICKER = "OVAL · ROUND · SQUARE · HEART · DIAMOND · OBLONG · ";
-
 const ArrowRight = () => (
   <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
     <path d="M2 7.5h11M9 3.5l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -96,7 +91,10 @@ export default function LandingPage() {
     <main style={{ background: "var(--ground)", color: "var(--text)", fontFamily: "var(--font-body)" }}>
 
       {/* ─────────────────────────── HERO ─────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-0 items-center py-20 lg:py-28">
+      <section
+        className="max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-0 items-center py-20 lg:py-28"
+        style={{ paddingTop: "4.5rem" }}
+      >
 
         {/* Left — editorial headline */}
         <div className="lg:pr-14">
@@ -160,8 +158,7 @@ export default function LandingPage() {
               marginBottom: 40,
             }}
           >
-            Upload a photo. Our AI reads your face shape from 468 landmarks
-            and surfaces the cuts that will work best for you — instantly.
+            Our AI accurately analyzes your face shape and instantly recommends hairstyles that perfectly complement your unique features.
           </p>
 
           {/* CTAs */}
@@ -236,163 +233,21 @@ export default function LandingPage() {
           </p>
         </div>
 
-        {/* Right — animated face-shape lens (desktop only) */}
+        {/* Right — sample image (desktop only) */}
         <div className="hidden lg:flex justify-center items-center">
-          <div style={{ position: "relative", width: 420, height: 420 }}>
-
-            {/* Outer dashed scanning ring */}
-            <svg
-              className="anim-spin-slow"
-              width="420" height="420" viewBox="0 0 420 420"
-              style={{ position: "absolute", top: 0, left: 0 }}
-              aria-hidden="true"
-            >
-              <circle
-                cx="210" cy="210" r="200"
-                fill="none"
-                stroke="var(--accent)"
-                strokeWidth="1"
-                strokeDasharray="5 14"
-                opacity="0.35"
-              />
-            </svg>
-
-            {/* Inner pulsing ring */}
-            <svg
+          <div style={{ position: "relative", width: 420, height: 420, overflow: "hidden", borderRadius: 8 }}>
+            <img
+              src="/assets/sample.png"
+              alt="Sample hairstyle"
               className="anim-pulse"
-              width="420" height="420" viewBox="0 0 420 420"
-              style={{ position: "absolute", top: 0, left: 0 }}
-              aria-hidden="true"
-            >
-              <circle
-                cx="210" cy="210" r="166"
-                fill="none"
-                stroke="var(--accent)"
-                strokeWidth="0.75"
-                opacity="0.25"
-              />
-            </svg>
-
-            {/* Cycling face shape outlines */}
-            {FACE_SHAPES.map((shape, i) => (
-              <svg
-                key={shape.name}
-                viewBox="0 0 100 100"
-                width="260" height="260"
-                aria-label={shape.name}
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
-                  animation: `cycleShape 15s ${SHAPE_DELAYS[i]} infinite`,
-                }}
-              >
-                <path
-                  d={shape.path}
-                  fill="none"
-                  stroke="var(--accent)"
-                  strokeWidth="1.6"
-                />
-                <path
-                  d={shape.path}
-                  fill="var(--accent)"
-                  opacity="0.06"
-                />
-              </svg>
-            ))}
-
-            {/* Cycling shape name label */}
-            {FACE_SHAPES.map((shape, i) => (
-              <div
-                key={`label-${shape.name}`}
-                style={{
-                  position: "absolute",
-                  bottom: 44,
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  padding: "5px 16px",
-                  borderRadius: 100,
-                  background: "var(--surface-2)",
-                  border: "1px solid var(--accent-border)",
-                  whiteSpace: "nowrap" as const,
-                  animation: `cycleShape 15s ${SHAPE_DELAYS[i]} infinite`,
-                }}
-              >
-                <span style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 10,
-                  letterSpacing: "0.14em",
-                  color: "var(--accent)",
-                  textTransform: "uppercase" as const,
-                }}>
-                  {shape.name} Shape
-                </span>
-              </div>
-            ))}
-
-            {/* Corner bracket markers */}
-            {([
-              { top: 30, left: 30, bT: true,  bL: true,  bB: false, bR: false },
-              { top: 30, right: 30, bT: true,  bL: false, bB: false, bR: true  },
-              { bottom: 30, left: 30, bT: false, bL: true,  bB: true,  bR: false },
-              { bottom: 30, right: 30, bT: false, bL: false, bB: true,  bR: true  },
-            ] as Array<{ top?: number; left?: number; bottom?: number; right?: number; bT: boolean; bL: boolean; bB: boolean; bR: boolean }>
-            ).map((m, i) => (
-              <div
-                key={i}
-                aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  top: m.top,
-                  left: m.left,
-                  bottom: m.bottom,
-                  right: m.right,
-                  width: 18,
-                  height: 18,
-                  borderTop:    m.bT ? "2px solid var(--accent)" : "none",
-                  borderLeft:   m.bL ? "2px solid var(--accent)" : "none",
-                  borderBottom: m.bB ? "2px solid var(--accent)" : "none",
-                  borderRight:  m.bR ? "2px solid var(--accent)" : "none",
-                  opacity: 0.55,
-                }}
-              />
-            ))}
+              width={420}
+              height={420}
+              style={{ width: 420, height: 420, objectFit: "cover" }}
+            />
+            <div className="scanning-line" aria-hidden="true" />
           </div>
         </div>
       </section>
-
-      {/* ─────────────────────── TICKER STRIP ─────────────────────── */}
-      <div
-        style={{
-          overflow: "hidden",
-          borderTop: "1px solid var(--border)",
-          borderBottom: "1px solid var(--border)",
-          background: "var(--surface)",
-          padding: "11px 0",
-        }}
-        aria-hidden="true"
-      >
-        <div style={{
-          display: "flex",
-          width: "max-content",
-          animation: "tickerScroll 18s linear infinite",
-        }}>
-          {[...Array(8)].map((_, i) => (
-            <span
-              key={i}
-              style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 11,
-                letterSpacing: "0.13em",
-                color: "var(--text-muted)",
-              }}
-            >
-              {TICKER}
-            </span>
-          ))}
-        </div>
-      </div>
 
       {/* ───────────────────── HOW IT WORKS ───────────────────────── */}
       <section className="py-24 max-w-7xl mx-auto px-6 lg:px-12">
@@ -556,10 +411,22 @@ export default function LandingPage() {
               style={{
                 background: "var(--surface)",
                 border: "1px solid var(--border)",
-                transition: "border-color 0.2s",
+                transition: "border-color 0.2s, transform 0.35s ease, box-shadow 0.35s ease",
+                transform: "perspective(800px) rotateX(0deg) rotateY(0deg) translateY(0)",
+                willChange: "transform",
               }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "var(--accent-border)")}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.borderColor = "var(--border)")}
+              onMouseEnter={(e) => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.borderColor = "var(--accent-border)";
+                el.style.transform = "perspective(800px) rotateX(6deg) rotateY(-6deg) translateY(-8px)";
+                el.style.boxShadow = "0 24px 48px rgba(0,0,0,0.4)";
+              }}
+              onMouseLeave={(e) => {
+                const el = e.currentTarget as HTMLElement;
+                el.style.borderColor = "var(--border)";
+                el.style.transform = "perspective(800px) rotateX(0deg) rotateY(0deg) translateY(0)";
+                el.style.boxShadow = "none";
+              }}
             >
               <span style={{
                 fontFamily: "var(--font-mono)",
@@ -635,7 +502,8 @@ export default function LandingPage() {
       </section>
 
       {/* ─────────────────────────── FOOTER ──────────────────────── */}
-      <footer style={{ borderTop: "1px solid var(--border)", padding: "28px 0" }}>
+      <footer id="contact" style={{ borderTop: "1px solid var(--border)", padding: "28px 0", background:"#000"
+         }}>
         <div
           className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col sm:flex-row justify-between items-center gap-4"
         >
