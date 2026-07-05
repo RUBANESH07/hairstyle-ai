@@ -7,7 +7,6 @@ import { useState } from "react";
 
 const NAV_LINKS = [
   { label: "Home",       href: "/" },
-  { label: "About",      href: "#about" },
   { label: "Hairstyles", href: "#hairstyles" },
   { label: "AI Try-On",  href: "#tryon" },
   { label: "Gallery",    href: "#gallery" },
@@ -32,7 +31,7 @@ export default function Navbar() {
     fontSize: 14,
     fontWeight: 500,
     textDecoration: "none",
-    transition: "color 0.18s, background 0.18s",
+    transition: "color 0.18s, background 0.18s, transform 0.12s",
     fontFamily: "var(--font-body)",
   };
 
@@ -42,13 +41,15 @@ export default function Navbar() {
         position: "sticky",
         top: 0,
         zIndex: 50,
-        background: "rgba(11, 13, 23, 0.82)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderBottom: "1px solid var(--border)",
+        background:"linear-gradient(to top, #000, #000, #35063a)"
+
       }}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4"
+        style={{
+          // background:"linear-gradient(to top, #000, #0c0b0baa)"
+        }}
+      >
 
         {/* Logo */}
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
@@ -86,6 +87,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
+                className="nav-link"
                 style={{
                   ...navBase,
                   color: active ? "var(--accent)" : "var(--text-muted)",
@@ -269,6 +271,7 @@ export default function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
+              className="nav-link"
               style={{
                 display: "block",
                 padding: "11px 0",
@@ -278,7 +281,7 @@ export default function Navbar() {
                 textDecoration: "none",
                 borderBottom: "1px solid var(--border)",
                 fontFamily: "var(--font-body)",
-                transition: "color 0.15s",
+                transition: "color 0.15s, transform 0.12s",
               }}
             >
               {link.label}

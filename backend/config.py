@@ -14,6 +14,6 @@ MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png"}
 
 # Default admin seeded on first run
-DEFAULT_ADMIN_NAME = "Admin Rubi"
-DEFAULT_ADMIN_EMAIL = "adminrubi@gmail.com"
+DEFAULT_ADMIN_NAME = "Admin"
+DEFAULT_ADMIN_EMAIL = "admin@gmail.com"
 DEFAULT_ADMIN_PASSWORD = "rubi@07"
