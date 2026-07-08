@@ -3,6 +3,7 @@ import { Playfair_Display, DM_Sans, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import Navbar from "@/components/Navbar";
+import CursorSmoke from "@/components/CursorSmoke";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -40,6 +41,7 @@ export default function RootLayout({
     >
       <body>
         <AuthProvider>
+          <CursorSmoke />
           <Navbar />
           {children}
         </AuthProvider>
