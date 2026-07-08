@@ -79,12 +79,26 @@ body {
   transform: scale(0.94);
 }
 
+/* ── Cursor-reactive WebGL fluid dye simulation ── */
+
+.fluid-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: screen;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .anim-fade-up,
   .anim-spin-slow,
   .anim-pulse,
-  .scanning-line {
+  .scanning-line,
+  .fluid-canvas {
     animation: none;
+    display: none;
   }
 }
 
