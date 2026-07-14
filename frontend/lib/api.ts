@@ -43,8 +43,9 @@ export interface HistoryItem {
   gender: string;
   created_at: string;
 }
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "https://hairstyle-ai-amyr.onrender.com";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+// const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 function getToken(): string | null {
   if (typeof window === "undefined") return null;
