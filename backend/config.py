@@ -4,7 +4,9 @@ BASE_DIR = Path(__file__).parent
 UPLOAD_DIR = BASE_DIR.parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
 
-DATABASE_URL = "postgresql://postgres:postgres123@localhost:5432/hairstyle_ai"
+# DATABASE_URL = "postgresql://postgres:postgres123@localhost:5432/neondb"
+# Live production database (Neon)
+DATABASE_URL = "postgresql://neondb_owner:npg_Pv0ehRaOGu7Q@ep-fancy-field-at9s7ex5-pooler.c-9.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 
 SECRET_KEY = "hairstyle-ai-secret-change-in-production"
 ALGORITHM = "HS256"
