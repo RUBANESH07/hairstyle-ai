@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
@@ -53,21 +54,17 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <div style={{
-            width: 34,
-            height: 34,
-            background: "linear-gradient(135deg, #C8A96A 0%, #7C5CBF 100%)",
-            borderRadius: 9,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 15,
-            color: "#fff",
-            fontWeight: 700,
-            flexShrink: 0,
-          }}>
-            ✂
-          </div>
+          <Image
+            src="/assets/logo.png"
+            alt="Hairstyle AI logo"
+            width={34}
+            height={34}
+            style={{
+              borderRadius: 9,
+              flexShrink: 0,
+              objectFit: "cover",
+            }}
+          />
           <span style={{
             fontFamily: "var(--font-display)",
             fontSize: 20,
