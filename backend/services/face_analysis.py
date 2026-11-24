@@ -9,7 +9,7 @@ import mediapipe as mp
 import numpy as np
 from fastapi import HTTPException
 
-from config import UPLOAD_DIR
+from config import DEBUG_IMAGES, MAX_IMAGE_SIDE, UPLOAD_DIR
 
 # ── MediaPipe singletons ───────────────────────────────────────────────────
 _face_detection = mp.solutions.face_detection.FaceDetection(
@@ -33,6 +33,10 @@ def run_analysis(image_id: str, image_path: Path) -> dict:
         raise HTTPException(status_code=400, detail="Invalid image file")
 
     h, w, _ = img.shape
+    if max(h, w) > MAX_IMAGE_SIDE:
+        scale = MAX_IMAGE_SIDE / max(h, w)
+        img = cv2.resize(img, (int(w * scale), int(h * scale)), interpolation=cv2.INTER_AREA)
+        h, w, _ = img.shape
     rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     # ── Face detection ─────────────────────────────────────────────────────
@@ -74,25 +78,26 @@ def run_analysis(image_id: str, image_path: Path) -> dict:
     face_length = distance(10, 152)
 
     # ── Debug image ────────────────────────────────────────────────────────
-    debug_img = crop.copy()
-    for lm in landmarks:
-        cv2.circle(debug_img, (int(lm.x * crop_w), int(lm.y * crop_h)), 1, (0, 255, 0), -1)
+    if DEBUG_IMAGES:
+        debug_img = crop.copy()
+        for lm in landmarks:
+            cv2.circle(debug_img, (int(lm.x * crop_w), int(lm.y * crop_h)), 1, (0, 255, 0), -1)
 
-    for idx in [103, 332, 234, 454, 172, 397, 10, 152]:
-        px, py = get_xy(idx)
-        cv2.circle(debug_img, (px, py), 6, (0, 0, 255), -1)
-        cv2.putText(debug_img, str(idx), (px + 5, py - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
+        for idx in [103, 332, 234, 454, 172, 397, 10, 152]:
+            px, py = get_xy(idx)
+            cv2.circle(debug_img, (px, py), 6, (0, 0, 255), -1)
+            cv2.putText(debug_img, str(idx), (px + 5, py - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
 
-    for i, j, color in [
-        (103, 332, (255, 0, 0)),
-        (234, 454, (0, 255, 255)),
-        (172, 397, (255, 255, 0)),
-        (10, 152, (255, 0, 255)),
-    ]:
-        cv2.line(debug_img, get_xy(i), get_xy(j), color, 2)
+        for i, j, color in [
+            (103, 332, (255, 0, 0)),
+            (234, 454, (0, 255, 255)),
+            (172, 397, (255, 255, 0)),
+            (10, 152, (255, 0, 255)),
+        ]:
+            cv2.line(debug_img, get_xy(i), get_xy(j), color, 2)
 
-    debug_path = UPLOAD_DIR / f"{image_id}_landmarks.jpg"
-    cv2.imwrite(str(debug_path), debug_img)
+        debug_path = UPLOAD_DIR / f"{image_id}_landmarks.jpg"
+        cv2.imwrite(str(debug_path), debug_img)
 
     return {
         "face_detected": True,

@@ -2,80 +2,21 @@
 
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
-
-/* ── SVG paths for the 6 face shapes (100×100 viewBox) ── */
-const FACE_SHAPES = [
-  {
-    name: "Oval",
-    desc: "Balanced & versatile",
-    path: "M50 12 C73 12 88 28 88 50 C88 72 73 88 50 88 C27 88 12 72 12 50 C12 28 27 12 50 12 Z",
-  },
-  {
-    name: "Round",
-    desc: "Full cheeks, soft jaw",
-    path: "M50 8 C75 8 92 26 92 50 C92 74 75 92 50 92 C25 92 8 74 8 50 C8 26 25 8 50 8 Z",
-  },
-  {
-    name: "Square",
-    desc: "Strong jaw, wide brow",
-    path: "M16 16 L84 16 L84 84 L16 84 Z",
-  },
-  {
-    name: "Heart",
-    desc: "Wide forehead, narrow chin",
-    path: "M50 82 C22 60 7 44 7 30 C7 18 17 10 28 10 C38 10 46 16 50 24 C54 16 62 10 72 10 C83 10 93 18 93 30 C93 44 78 60 50 82 Z",
-  },
-  {
-    name: "Diamond",
-    desc: "Wide cheekbones",
-    path: "M50 7 L90 50 L50 93 L10 50 Z",
-  },
-  {
-    name: "Oblong",
-    desc: "Long & narrow",
-    path: "M50 8 C63 8 76 18 76 32 L76 68 C76 82 63 92 50 92 C37 92 24 82 24 68 L24 32 C24 18 37 8 50 8 Z",
-  },
-];
+import Reveal from "@/components/Reveal";
+import WalkerShowcase from "@/components/walker/WalkerShowcase";
+import { FACE_SHAPES } from "@/lib/faceShapes";
 
 const STEPS = [
-  {
-    num: "01",
-    title: "Upload Your Photo",
-    desc: "A clear front-facing shot — JPG or PNG, up to 10 MB. The AI needs your full face in frame.",
-  },
-  {
-    num: "02",
-    title: "AI Face Analysis",
-    desc: "468 facial landmarks are mapped in real time. Your face shape is classified in under a second.",
-  },
-  {
-    num: "03",
-    title: "Get Recommendations",
-    desc: "Receive your top personalized hairstyle picks — curated for your shape, for men and women.",
-  },
+  { num: "01", title: "Upload your photo", desc: "A clear front-facing shot — JPG or PNG, up to 10 MB. The AI needs your full face in frame." },
+  { num: "02", title: "AI face analysis", desc: "468 facial landmarks are mapped in real time. Your face shape is classified in seconds." },
+  { num: "03", title: "Get recommendations", desc: "Receive your top personalised hairstyle picks — curated for your shape, for men and women." },
 ];
 
 const FEATURES = [
-  {
-    label: "Precision",
-    title: "468-point landmark mesh",
-    desc: "MediaPipe's face mesh model maps your face with clinical precision before classifying your shape.",
-  },
-  {
-    label: "Speed",
-    title: "Under 3 seconds",
-    desc: "No upload queues, no waiting. Analysis runs the moment your photo lands on the server.",
-  },
-  {
-    label: "Inclusive",
-    title: "Built for everyone",
-    desc: "Dedicated recommendation sets for both men's and women's hairstyles across all six face shapes.",
-  },
-  {
-    label: "Private",
-    title: "Your data stays yours",
-    desc: "Photos are processed server-side and never shared with third parties. Your analysis is yours alone.",
-  },
+  { label: "Precision", title: "468-point landmark mesh", desc: "MediaPipe's face mesh maps your face with clinical precision before classifying your shape." },
+  { label: "Speed", title: "Seconds, not minutes", desc: "No queues and no waiting. Analysis runs the moment your photo reaches the server." },
+  { label: "Inclusive", title: "Built for everyone", desc: "Dedicated recommendation sets for men's and women's hairstyles across all six face shapes." },
+  { label: "Private", title: "Your data stays yours", desc: "Photos are processed server-side and never shared with third parties." },
 ];
 
 const ArrowRight = () => (
@@ -86,450 +27,178 @@ const ArrowRight = () => (
 
 export default function LandingPage() {
   const { user } = useAuth();
+  const ctaHref = user ? "/analyze" : "/register";
 
   return (
-    <main style={{ background: "var(--ground)", color: "var(--text)", fontFamily: "var(--font-body)" }}>
-
-      {/* ─────────────────────────── HERO ─────────────────────────── */}
-      <section
-        className="max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-0 items-center py-20 lg:py-28"
-        style={{ paddingTop: "4.5rem" }}
-      >
-
-        {/* Left — editorial headline */}
-        <div className="lg:pr-14">
-
-          {/* Badge */}
-          <div
-            className="anim-fade-up inline-flex items-center gap-2 mb-8"
-            style={{
-              padding: "5px 14px",
-              borderRadius: 100,
-              border: "1px solid var(--accent-border)",
-              background: "var(--accent-low)",
-            }}
-          >
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--accent)", display: "block", flexShrink: 0 }} />
-            <span style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 11,
-              letterSpacing: "0.12em",
-              color: "var(--accent)",
-              textTransform: "uppercase" as const,
-            }}>
-              AI-Powered · Face Shape Analysis
-            </span>
-          </div>
-
-          {/* Headline — the aesthetic risk: italic Playfair in gold */}
-          <h1
-            className="anim-fade-up anim-delay-1"
-            style={{
-              fontFamily: "var(--font-body)",
-              fontSize: "clamp(46px, 5.5vw, 78px)",
-              fontWeight: 800,
-              lineHeight: 1.06,
-              letterSpacing: "-0.03em",
-              margin: 0,
-            }}
-          >
-            Find your
-            <br />
-            <em style={{
-              fontFamily: "var(--font-display)",
-              fontStyle: "italic",
-              fontWeight: 700,
-              color: "var(--accent)",
-            }}>
-              perfect
-            </em>
-            <br />
-            hairstyle
-          </h1>
-
-          <p
-            className="anim-fade-up anim-delay-2"
-            style={{
-              fontSize: 17,
-              lineHeight: 1.72,
-              color: "var(--text-muted)",
-              maxWidth: 420,
-              marginTop: 24,
-              marginBottom: 40,
-            }}
-          >
-            Our AI accurately analyzes your face shape and instantly recommends hairstyles that perfectly complement your unique features.
+    <main>
+      {/* ─────────── HERO (black) ─────────── */}
+      <section className="section-dark snap-start-x" style={{ position: "relative", overflow: "hidden" }}>
+        <div aria-hidden="true" style={{ position: "absolute", top: "-20%", right: "-10%", width: 640, height: 640, borderRadius: "50%", background: "radial-gradient(circle, rgba(212,175,55,0.18), transparent 65%)", pointerEvents: "none" }} />
+        <div className="container-x" style={{ position: "relative", padding: "104px 24px 88px", textAlign: "center" }}>
+          <p className="eyebrow anim-fade-up" style={{ marginBottom: 26, display: "inline-flex", gap: 10, alignItems: "center", padding: "7px 16px", border: "1px solid rgba(212,175,55,0.45)", borderRadius: 100 }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--gold)" }} />
+            AI stylist · Face shape analysis
           </p>
-
-          {/* CTAs */}
-          <div className="anim-fade-up anim-delay-3 flex flex-wrap gap-3">
-            <Link
-              href={user ? "/analyze" : "/register"}
-              className="inline-flex items-center gap-2"
-              style={{
-                padding: "14px 26px",
-                borderRadius: 12,
-                background: "var(--accent)",
-                color: "#0B0D17",
-                fontSize: 15,
-                fontWeight: 700,
-                textDecoration: "none",
-                letterSpacing: "-0.01em",
-                transition: "opacity 0.18s, transform 0.18s",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.opacity = "0.87";
-                (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.opacity = "1";
-                (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-              }}
-            >
-              {user ? "Analyze My Face" : "Get Started Free"}
-              <ArrowRight />
+          <h1 className="h-display anim-fade-up anim-delay-1" style={{ fontSize: "clamp(48px, 8.5vw, 124px)", margin: "0 auto", maxWidth: 1000 }}>
+            Find your <em>perfect</em> hairstyle
+          </h1>
+          <p className="lead anim-fade-up anim-delay-2" style={{ maxWidth: 560, margin: "28px auto 40px" }}>
+            Upload one photo. Our AI maps your face, finds your shape, and recommends the cuts that frame you best — then lets you see them in motion.
+          </p>
+          <div className="anim-fade-up anim-delay-3" style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+            <Link href={ctaHref} className="btn btn-gold">
+              {user ? "Analyze my face" : "Get started free"} <ArrowRight />
             </Link>
-
-            {!user && (
-              <Link
-                href="/login"
-                className="inline-flex items-center"
-                style={{
-                  padding: "14px 26px",
-                  borderRadius: 12,
-                  border: "1px solid var(--border)",
-                  color: "var(--text-muted)",
-                  fontSize: 15,
-                  fontWeight: 500,
-                  textDecoration: "none",
-                  transition: "border-color 0.18s, color 0.18s",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = "var(--accent-border)";
-                  (e.currentTarget as HTMLElement).style.color = "var(--text)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
-                  (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
-                }}
-              >
-                Sign in
-              </Link>
-            )}
+            {!user && <Link href="/login" className="btn btn-outline-dark">Sign in</Link>}
           </div>
-
-          <p
-            className="anim-fade-up anim-delay-3"
-            style={{
-              marginTop: 18,
-              fontSize: 11,
-              color: "var(--text-muted)",
-              fontFamily: "var(--font-mono)",
-              letterSpacing: "0.1em",
-              textTransform: "uppercase" as const,
-            }}
-          >
+          <p style={{ marginTop: 22, fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--muted-dark)" }}>
             Free · No credit card · Instant results
           </p>
         </div>
-
-        {/* Right — sample image (desktop only) */}
-        <div className="hidden lg:flex justify-center items-center">
-          <div style={{ position: "relative", width: 420, height: 420, overflow: "hidden", borderRadius: 8 }}>
-            <img
-              src="/assets/sample.png"
-              alt="Sample hairstyle"
-              className="anim-pulse"
-              width={420}
-              height={420}
-              style={{ width: 420, height: 420, objectFit: "cover" }}
-            />
-            <div className="scanning-line" aria-hidden="true" />
-          </div>
-        </div>
       </section>
 
-      {/* ───────────────────── HOW IT WORKS ───────────────────────── */}
-      <section className="py-24 max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+      {/* ─────────── 3D SCROLL STAGE (id=hairstyles) ─────────── */}
+      <WalkerShowcase />
 
-          {/* Sticky header */}
-          <div className="lg:sticky lg:top-28">
-            <p style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 11,
-              letterSpacing: "0.12em",
-              color: "var(--accent)",
-              textTransform: "uppercase" as const,
-              marginBottom: 16,
-            }}>
-              Simple Steps
-            </p>
-            <h2 style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "clamp(34px, 4vw, 54px)",
-              fontWeight: 700,
-              lineHeight: 1.1,
-              letterSpacing: "-0.025em",
-              margin: 0,
-            }}>
-              How it{" "}
-              <em style={{ fontStyle: "italic", color: "var(--accent)" }}>works</em>
-            </h2>
-            <p style={{
-              marginTop: 20,
-              fontSize: 16,
-              lineHeight: 1.72,
-              color: "var(--text-muted)",
-              maxWidth: 340,
-            }}>
-              Three steps from photo to perfect hairstyle. Free to browse — no account needed.
-            </p>
-          </div>
-
-          {/* Step list */}
-          <div>
-            {STEPS.map((step, i) => (
-              <div
-                key={step.num}
-                className="flex gap-7 items-start py-8"
-                style={{ borderBottom: i < STEPS.length - 1 ? "1px solid var(--border)" : "none" }}
-              >
-                <span style={{
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: "var(--accent)",
-                  minWidth: 28,
-                  paddingTop: 3,
-                  flexShrink: 0,
-                }}>
-                  {step.num}
-                </span>
-                <div>
-                  <h3 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 8px" }}>
-                    {step.title}
-                  </h3>
-                  <p style={{ fontSize: 15, lineHeight: 1.72, color: "var(--text-muted)", margin: 0 }}>
-                    {step.desc}
-                  </p>
-                </div>
+      {/* ─────────── HOW IT WORKS (white) ─────────── */}
+      <section className="section-light snap-start-x" style={{ padding: "120px 0" }}>
+        <div className="container-x" style={{ display: "grid", gap: 64 }}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
+            <Reveal>
+              <div className="lg:sticky lg:top-28">
+                <p className="eyebrow" style={{ marginBottom: 16 }}>Simple steps</p>
+                <h2 className="h-display" style={{ fontSize: "clamp(38px, 5vw, 66px)", margin: 0 }}>
+                  How it <em>works</em>
+                </h2>
+                <p className="lead" style={{ marginTop: 20, maxWidth: 360 }}>
+                  Three steps from photo to the right haircut. Create a free account to run your first analysis.
+                </p>
               </div>
-            ))}
+            </Reveal>
+
+            <div>
+              {STEPS.map((s, i) => (
+                <Reveal key={s.num} delay={i * 90}>
+                  <div style={{ display: "flex", gap: 28, padding: "34px 0", borderBottom: i < STEPS.length - 1 ? "1px solid var(--line-light)" : "none" }}>
+                    <span style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: 40, lineHeight: 1, color: "var(--gold)", minWidth: 60 }}>{s.num}</span>
+                    <div>
+                      <h3 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 8px" }}>{s.title}</h3>
+                      <p className="lead" style={{ margin: 0, fontSize: 16 }}>{s.desc}</p>
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ─────────────────────── FACE SHAPES ─────────────────────── */}
-      <section style={{ background: "var(--surface)", padding: "96px 0" }} id="hairstyles">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <div className="text-center mb-16">
-            <p style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: 11,
-              letterSpacing: "0.12em",
-              color: "var(--accent)",
-              textTransform: "uppercase" as const,
-              marginBottom: 16,
-            }}>
-              We detect 6 shapes
-            </p>
-            <h2 style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "clamp(30px, 3.5vw, 50px)",
-              fontWeight: 700,
-              lineHeight: 1.1,
-              letterSpacing: "-0.025em",
-            }}>
-              Which shape are{" "}
-              <em style={{ fontStyle: "italic", color: "var(--accent)" }}>you?</em>
-            </h2>
-          </div>
+      {/* ─────────── FACE SHAPES / GALLERY (black) ─────────── */}
+      <section id="gallery" className="section-dark snap-start-x" style={{ padding: "120px 0" }}>
+        <div className="container-x">
+          <Reveal>
+            <div style={{ textAlign: "center", marginBottom: 64 }}>
+              <p className="eyebrow" style={{ marginBottom: 16 }}>We detect 6 shapes</p>
+              <h2 className="h-display" style={{ fontSize: "clamp(36px, 5vw, 64px)", margin: 0 }}>
+                Which shape are <em>you?</em>
+              </h2>
+            </div>
+          </Reveal>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {FACE_SHAPES.map((shape) => (
-              <div
-                key={shape.name}
-                className="flex flex-col items-center text-center rounded-2xl p-6"
-                style={{
-                  background: "var(--surface-2)",
-                  border: "1px solid var(--border)",
-                  transition: "border-color 0.2s, transform 0.2s",
-                  cursor: "default",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = "var(--accent-border)";
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(-3px)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-                }}
-              >
-                <svg viewBox="0 0 100 100" width="68" height="68" style={{ marginBottom: 14 }} aria-label={shape.name}>
-                  <path d={shape.path} fill="none" stroke="var(--accent)" strokeWidth="2.2" />
-                  <path d={shape.path} fill="var(--accent)" opacity="0.07" />
-                </svg>
-                <p style={{ fontWeight: 700, fontSize: 14, letterSpacing: "-0.01em", margin: 0 }}>{shape.name}</p>
-                <p style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 4, margin: "4px 0 0" }}>{shape.desc}</p>
-              </div>
+            {FACE_SHAPES.map((s, i) => (
+              <Reveal key={s.name} delay={i * 60}>
+                <div className="card-dark shape-card" style={{ padding: "28px 16px", textAlign: "center", height: "100%" }}>
+                  <svg viewBox="0 0 100 100" width="72" height="72" style={{ marginBottom: 16 }} aria-label={s.name}>
+                    <path d={s.path} fill="rgba(212,175,55,0.1)" stroke="var(--gold)" strokeWidth="2.2" />
+                  </svg>
+                  <p style={{ fontWeight: 700, fontSize: 15, margin: 0 }}>{s.name}</p>
+                  <p style={{ fontSize: 12, color: "var(--muted-dark)", margin: "6px 0 0", lineHeight: 1.5 }}>{s.desc}</p>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ───────────────────────── FEATURES ──────────────────────── */}
-      <section className="py-24 max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="text-center mb-16">
-          <p style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 11,
-            letterSpacing: "0.12em",
-            color: "var(--accent)",
-            textTransform: "uppercase" as const,
-            marginBottom: 16,
-          }}>
-            Why Hairstyle AI
-          </p>
-          <h2 style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(30px, 3.5vw, 50px)",
-            fontWeight: 700,
-            lineHeight: 1.1,
-            letterSpacing: "-0.025em",
-          }}>
-            Built to be{" "}
-            <em style={{ fontStyle: "italic", color: "var(--accent)" }}>trusted</em>
-          </h2>
+      {/* ─────────── FEATURES (white) ─────────── */}
+      <section className="section-light snap-start-x" style={{ padding: "120px 0" }}>
+        <div className="container-x">
+          <Reveal>
+            <div style={{ textAlign: "center", marginBottom: 64 }}>
+              <p className="eyebrow" style={{ marginBottom: 16 }}>Why Hairstyle AI</p>
+              <h2 className="h-display" style={{ fontSize: "clamp(36px, 5vw, 64px)", margin: 0 }}>
+                Built to be <em>trusted</em>
+              </h2>
+            </div>
+          </Reveal>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {FEATURES.map((f, i) => (
+              <Reveal key={f.title} delay={i * 80}>
+                <div className="card-light feature-card" style={{ padding: 30, height: "100%" }}>
+                  <span className="eyebrow">{f.label}</span>
+                  <h3 style={{ fontSize: 19, fontWeight: 700, letterSpacing: "-0.02em", margin: "12px 0 10px" }}>{f.title}</h3>
+                  <p style={{ fontSize: 14.5, lineHeight: 1.7, color: "var(--muted-light)", margin: 0 }}>{f.desc}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
+      </section>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {FEATURES.map((f) => (
-            <div
-              key={f.title}
-              className="rounded-2xl p-8"
-              style={{
-                background: "var(--surface)",
-                border: "1px solid var(--border)",
-                transition: "border-color 0.2s, transform 0.35s ease, box-shadow 0.35s ease",
-                transform: "perspective(800px) rotateX(0deg) rotateY(0deg) translateY(0)",
-                willChange: "transform",
-              }}
-              onMouseEnter={(e) => {
-                const el = e.currentTarget as HTMLElement;
-                el.style.borderColor = "var(--accent-border)";
-                el.style.transform = "perspective(800px) rotateX(6deg) rotateY(-6deg) translateY(-8px)";
-                el.style.boxShadow = "0 24px 48px rgba(0,0,0,0.4)";
-              }}
-              onMouseLeave={(e) => {
-                const el = e.currentTarget as HTMLElement;
-                el.style.borderColor = "var(--border)";
-                el.style.transform = "perspective(800px) rotateX(0deg) rotateY(0deg) translateY(0)";
-                el.style.boxShadow = "none";
-              }}
-            >
-              <span style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: 10,
-                letterSpacing: "0.12em",
-                color: "var(--accent)",
-                textTransform: "uppercase" as const,
-              }}>
-                {f.label}
-              </span>
-              <h3 style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", margin: "10px 0 10px" }}>
-                {f.title}
-              </h3>
-              <p style={{ fontSize: 14, lineHeight: 1.72, color: "var(--text-muted)", margin: 0 }}>
-                {f.desc}
+      {/* ─────────── PHASE 2 TRY-ON (black) ─────────── */}
+      <section id="tryon" className="section-dark snap-start-x" style={{ padding: "120px 0" }}>
+        <div className="container-x">
+          <Reveal>
+            <div className="card-dark" style={{ padding: "64px 32px", textAlign: "center", borderColor: "rgba(212,175,55,0.45)" }}>
+              <p className="eyebrow" style={{ marginBottom: 16 }}>Phase 2 · Coming soon</p>
+              <h2 className="h-display" style={{ fontSize: "clamp(32px, 4.5vw, 58px)", margin: "0 0 18px" }}>
+                Try it on <em>before you cut</em>
+              </h2>
+              <p className="lead" style={{ maxWidth: 580, margin: "0 auto" }}>
+                Virtual try-on will place your recommended hairstyles on your own photo, so you can preview the look, compare options side by side, and walk into the salon with confidence.
               </p>
             </div>
-          ))}
+          </Reveal>
         </div>
       </section>
 
-      {/* ─────────────────────────── CTA ─────────────────────────── */}
-      <section className="pb-24 max-w-7xl mx-auto px-6 lg:px-12">
-        <div
-          className="flex flex-col lg:flex-row lg:items-center gap-10 rounded-3xl p-10 lg:p-16"
-          style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-        >
-          <div className="flex-1">
-            <h2 style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "clamp(26px, 3vw, 46px)",
-              fontWeight: 700,
-              lineHeight: 1.1,
-              letterSpacing: "-0.025em",
-              maxWidth: 520,
-              margin: "0 0 16px",
-            }}>
+      {/* ─────────── CTA (gold band) ─────────── */}
+      <section className="snap-start-x" style={{ background: "var(--gold)", color: "var(--ink)", padding: "88px 0" }}>
+        <div className="container-x" style={{ display: "flex", flexWrap: "wrap", gap: 32, alignItems: "center", justifyContent: "space-between" }}>
+          <div>
+            <h2 className="h-display" style={{ fontSize: "clamp(30px, 4vw, 54px)", margin: "0 0 12px", maxWidth: 620 }}>
               Ready to see which hairstyle suits your face?
             </h2>
-            <p style={{ fontSize: 16, color: "var(--text-muted)", margin: 0, maxWidth: 400 }}>
-              Free to try. Instant results. No credit card required.
-            </p>
+            <p style={{ fontSize: 16, margin: 0, color: "rgba(10,10,10,0.75)" }}>Free to try. Instant results. No credit card required.</p>
           </div>
-          <div style={{ flexShrink: 0 }}>
-            <Link
-              href={user ? "/analyze" : "/register"}
-              className="inline-flex items-center gap-2"
-              style={{
-                padding: "15px 30px",
-                borderRadius: 12,
-                background: "var(--accent)",
-                color: "#0B0D17",
-                fontSize: 15,
-                fontWeight: 700,
-                textDecoration: "none",
-                whiteSpace: "nowrap" as const,
-                transition: "opacity 0.18s, transform 0.18s",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.opacity = "0.87";
-                (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.opacity = "1";
-                (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-              }}
-            >
-              {user ? "Analyze My Face" : "Start for Free"}
-              <ArrowRight />
-            </Link>
-          </div>
+          <Link href={ctaHref} className="btn btn-ink">
+            {user ? "Analyze my face" : "Start for free"} <ArrowRight />
+          </Link>
         </div>
       </section>
 
-      {/* ─────────────────────────── FOOTER ──────────────────────── */}
-      <footer id="contact" style={{ borderTop: "1px solid var(--border)", padding: "28px 0", background:"#000"
-         }}>
-        <div
-          className="max-w-7xl mx-auto px-6 lg:px-12 flex flex-col sm:flex-row justify-between items-center gap-4"
-        >
-          <span style={{
-            fontFamily: "var(--font-display)",
-            fontSize: 18,
-            fontWeight: 700,
-            letterSpacing: "-0.02em",
-          }}>
-            Hairstyle<span style={{ color: "var(--accent)" }}>AI</span>
+      {/* ─────────── FOOTER (black) ─────────── */}
+      <footer id="contact" className="section-dark snap-start-x" style={{ borderTop: "1px solid var(--line-dark)", padding: "40px 0" }}>
+        <div className="container-x" style={{ display: "flex", flexWrap: "wrap", gap: 20, justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em" }}>
+            Hairstyle<span style={{ color: "var(--gold)" }}>AI</span>
           </span>
-          <p style={{ fontSize: 13, color: "var(--text-muted)", margin: 0 }}>
-            © 2025 Hairstyle AI · Phase 1 — Face Analysis &amp; Recommendations
+          <p style={{ fontSize: 13, color: "var(--muted-dark)", margin: 0 }}>
+            © 2026 Hairstyle AI · Phase 1 live — Face Analysis &amp; Recommendations
           </p>
-          <p style={{
-            fontSize: 11,
-            color: "var(--text-muted)",
-            fontFamily: "var(--font-mono)",
-            letterSpacing: "0.08em",
-            margin: 0,
-          }}>
-            PHASE 2: AI TRY-ON COMING
+          <p style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: "0.1em", color: "var(--gold)", margin: 0 }}>
+            PHASE 2 · VIRTUAL TRY-ON · COMING SOON
           </p>
         </div>
       </footer>
 
+      <style>{`
+        .shape-card{transition:border-color .25s,transform .25s}
+        .shape-card:hover{border-color:var(--gold);transform:translateY(-4px)}
+        .feature-card{transition:border-color .25s,transform .25s,box-shadow .25s}
+        .feature-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 18px 40px rgba(10,10,10,.08)}
+      `}</style>
     </main>
   );
 }

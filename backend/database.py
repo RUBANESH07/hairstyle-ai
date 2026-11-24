@@ -86,7 +86,12 @@ def init_db() -> None:
         )
     """)
 
+    conn.execute("ALTER TABLE uploaded_images ADD COLUMN IF NOT EXISTS gender TEXT")
     conn.commit()
+
+    if not (DEFAULT_ADMIN_EMAIL and DEFAULT_ADMIN_PASSWORD):
+        conn.close()
+        return
 
     existing = conn.execute(
         "SELECT id FROM users WHERE email = %s", (DEFAULT_ADMIN_EMAIL,)
