@@ -4,7 +4,7 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
 from auth import get_current_user
-from config import ALLOWED_EXTENSIONS, MAX_FILE_SIZE, UPLOAD_DIR
+from config import ALLOWED_EXTENSIONS, BASE_URL, DEBUG_IMAGES, MAX_FILE_SIZE, UPLOAD_DIR
 from database import get_db
 from services.face_analysis import run_analysis
 from services.face_shape import FACE_SHAPE_INFO, classify_shape
@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api", tags=["analyze"])
 
 
 @router.post("/analyze")
-async def analyze(
+def analyze(
     file: UploadFile = File(...),
     gender: str = Form("female"),
     user: dict = Depends(get_current_user),
@@ -27,7 +27,7 @@ async def analyze(
             detail="Only JPG, JPEG and PNG files are allowed",
         )
 
-    content = await file.read()
+    content = file.file.read(MAX_FILE_SIZE + 1)
     if len(content) > MAX_FILE_SIZE:
         raise HTTPException(status_code=400, detail="Maximum file size is 10 MB")
 
@@ -72,8 +72,8 @@ async def analyze(
         "face_detected": True,
         "image_id": image_id,
         "gender": gender_key,
-        "debug_image_url": f"http://127.0.0.1:8000/uploads/{image_id}_landmarks.jpg",
-        "face_crop_url": f"http://127.0.0.1:8000/uploads/{image_id}_face.jpg",
+        "debug_image_url": f"{BASE_URL}/uploads/{image_id}_landmarks.jpg" if DEBUG_IMAGES else None,
+        "face_crop_url": f"{BASE_URL}/uploads/{image_id}_face.jpg",
         "bbox": analysis["bbox"],
         "measurements": measurements,
         "face_shape": face_shape,

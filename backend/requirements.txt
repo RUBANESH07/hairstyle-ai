@@ -6,3 +6,4 @@ numpy
 python-multipart
 PyJWT
 psycopg2-binary
+python-dotenv

@@ -1,24 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
 
 const NAV_LINKS = [
-  { label: "Home",       href: "/" },
-  { label: "Hairstyles", href: "#hairstyles" },
-  { label: "AI Try-On",  href: "#tryon" },
-  { label: "Gallery",    href: "#gallery" },
-  { label: "Contact",    href: "#contact" },
+  { label: "Home", href: "/" },
+  { label: "Hairstyles", href: "/#hairstyles" },
+  { label: "AI Try-On", href: "/#tryon" },
+  { label: "Gallery", href: "/#gallery" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export default function Navbar() {
   const { user, logout } = useAuth();
-  const router   = useRouter();
-  const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   function handleLogout() {
     logout();
@@ -26,302 +32,107 @@ export default function Navbar() {
     setOpen(false);
   }
 
-  const navBase: React.CSSProperties = {
-    padding: "7px 14px",
-    borderRadius: 8,
-    fontSize: 14,
-    fontWeight: 500,
-    textDecoration: "none",
-    transition: "color 0.18s, background 0.18s, transform 0.12s",
-    fontFamily: "var(--font-body)",
-  };
-
   return (
     <header
       style={{
         position: "sticky",
         top: 0,
         zIndex: 50,
-        background:"linear-gradient(to top, #000, #000, #35063a)"
-
+        background: scrolled ? "rgba(10,10,10,0.82)" : "#0A0A0A",
+        backdropFilter: scrolled ? "blur(14px)" : "none",
+        borderBottom: `1px solid ${scrolled ? "rgba(255,255,255,0.1)" : "transparent"}`,
+        transition: "background 0.3s, border-color 0.3s",
       }}
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4"
-        style={{
-          // background:"linear-gradient(to top, #000, #0c0b0baa)"
-        }}
-      >
-
+      <div className="container-x" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 68 }}>
         {/* Logo */}
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <Image
-            src="/assets/logo.png"
-            alt="Hairstyle AI logo"
-            width={34}
-            height={34}
-            style={{
-              borderRadius: 9,
-              flexShrink: 0,
-              objectFit: "cover",
-            }}
-          />
-          <span style={{
-            fontFamily: "var(--font-display)",
-            fontSize: 20,
-            fontWeight: 700,
-            letterSpacing: "-0.02em",
-            color: "var(--text)",
-          }}>
-            Hairstyle<span style={{ color: "var(--accent)" }}>AI</span>
+        <Link href="/" onClick={() => setOpen(false)} style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+          <span
+            aria-label="RH logo"
+            style={{ width: 36, height: 36, borderRadius: 9, background: "var(--gold)", color: "var(--ink)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 17, letterSpacing: "-0.04em", flexShrink: 0 }}
+          >
+            RH
+          </span>
+          <span style={{ fontFamily: "var(--font-display)", fontSize: 21, fontWeight: 700, letterSpacing: "-0.02em", color: "#fff" }}>
+            Hairstyle<span style={{ color: "var(--gold)" }}>AI</span>
           </span>
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden lg:flex items-center gap-0.5">
-          {NAV_LINKS.map((link) => {
-            const active = pathname === link.href;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="nav-link"
-                style={{
-                  ...navBase,
-                  color: active ? "var(--accent)" : "var(--text-muted)",
-                  background: active ? "var(--accent-low)" : "transparent",
-                }}
-                onMouseEnter={(e) => {
-                  if (!active) {
-                    (e.currentTarget as HTMLElement).style.color = "var(--text)";
-                    (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!active) {
-                    (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
-                    (e.currentTarget as HTMLElement).style.background = "transparent";
-                  }
-                }}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+        {/* Desktop links */}
+        <nav className="hidden lg:flex items-center" style={{ gap: 4 }}>
+          {NAV_LINKS.map((l) => (
+            <Link key={l.label} href={l.href} className="nav-link-x">
+              {l.label}
+            </Link>
+          ))}
         </nav>
 
         {/* Desktop auth */}
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="hidden lg:flex items-center" style={{ gap: 10 }}>
           {user ? (
             <>
-              <span style={{ fontSize: 14, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
-                Hi,{" "}
-                <span style={{ color: "var(--text)", fontWeight: 600 }}>
-                  {user.name.split(" ")[0]}
-                </span>
+              <Link href="/analyze" className="btn btn-gold btn-sm">Analyze</Link>
+              <span style={{ fontSize: 13, color: "var(--muted-dark)", maxWidth: 130, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {user.name}
               </span>
-              <Link
-                href="/analyze"
-                style={{
-                  padding: "9px 20px",
-                  borderRadius: 10,
-                  background: "var(--accent)",
-                  color: "#0B0D17",
-                  fontSize: 14,
-                  fontWeight: 700,
-                  textDecoration: "none",
-                  fontFamily: "var(--font-body)",
-                  transition: "opacity 0.18s, transform 0.18s",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.opacity = "0.87";
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.opacity = "1";
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-                }}
-              >
-                Analyze →
-              </Link>
-              <button
-                onClick={handleLogout}
-                style={{
-                  padding: "9px 20px",
-                  borderRadius: 10,
-                  border: "1px solid var(--border)",
-                  background: "transparent",
-                  color: "var(--text-muted)",
-                  fontSize: 14,
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  fontFamily: "var(--font-body)",
-                  transition: "border-color 0.18s, color 0.18s",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = "var(--accent-border)";
-                  (e.currentTarget as HTMLElement).style.color = "var(--text)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
-                  (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
-                }}
-              >
-                Logout
-              </button>
+              <button onClick={handleLogout} className="btn btn-outline-dark btn-sm">Log out</button>
             </>
           ) : (
             <>
-              <Link
-                href="/login"
-                style={{
-                  padding: "9px 20px",
-                  borderRadius: 10,
-                  border: "1px solid var(--border)",
-                  background: "transparent",
-                  color: "var(--text-muted)",
-                  fontSize: 14,
-                  fontWeight: 500,
-                  textDecoration: "none",
-                  fontFamily: "var(--font-body)",
-                  transition: "border-color 0.18s, color 0.18s",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = "var(--accent-border)";
-                  (e.currentTarget as HTMLElement).style.color = "var(--text)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
-                  (e.currentTarget as HTMLElement).style.color = "var(--text-muted)";
-                }}
-              >
-                Login
-              </Link>
-              <Link
-                href="/register"
-                style={{
-                  padding: "9px 22px",
-                  borderRadius: 10,
-                  background: "var(--accent)",
-                  color: "#0B0D17",
-                  fontSize: 14,
-                  fontWeight: 700,
-                  textDecoration: "none",
-                  fontFamily: "var(--font-body)",
-                  transition: "opacity 0.18s, transform 0.18s",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.opacity = "0.87";
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.opacity = "1";
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-                }}
-              >
-                Get Started
-              </Link>
+              <Link href="/login" className="btn btn-outline-dark btn-sm">Log in</Link>
+              <Link href="/register" className="btn btn-gold btn-sm">Get started</Link>
             </>
           )}
         </div>
 
-        {/* Mobile hamburger */}
+        {/* Mobile toggle */}
         <button
           className="lg:hidden"
-          onClick={() => setOpen(!open)}
-          aria-label="Toggle menu"
-          style={{
-            background: "transparent",
-            border: "1px solid var(--border)",
-            borderRadius: 8,
-            color: "var(--text)",
-            cursor: "pointer",
-            padding: "7px 9px",
-            lineHeight: 0,
-          }}
+          onClick={() => setOpen((o) => !o)}
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 10, width: 42, height: 42, color: "#fff", cursor: "pointer" }}
         >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
             {open ? (
-              <>
-                <line x1="4" y1="4" x2="16" y2="16" />
-                <line x1="16" y1="4" x2="4" y2="16" />
-              </>
+              <path d="M3 3l12 12M15 3L3 15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
             ) : (
-              <>
-                <line x1="3" y1="6"  x2="17" y2="6"  />
-                <line x1="3" y1="10" x2="17" y2="10" />
-                <line x1="3" y1="14" x2="17" y2="14" />
-              </>
+              <path d="M2 5h14M2 9h14M2 13h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
             )}
           </svg>
         </button>
       </div>
 
-      {/* Mobile drawer */}
+      {/* Mobile menu */}
       {open && (
-        <div style={{
-          background: "var(--surface)",
-          borderTop: "1px solid var(--border)",
-          padding: "16px 20px 24px",
-        }}>
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              className="nav-link"
-              style={{
-                display: "block",
-                padding: "11px 0",
-                fontSize: 15,
-                fontWeight: 500,
-                color: "var(--text-muted)",
-                textDecoration: "none",
-                borderBottom: "1px solid var(--border)",
-                fontFamily: "var(--font-body)",
-                transition: "color 0.15s, transform 0.12s",
-              }}
-            >
-              {link.label}
+        <div className="lg:hidden" style={{ background: "#0A0A0A", borderTop: "1px solid rgba(255,255,255,0.1)", padding: "12px 24px 24px" }}>
+          {NAV_LINKS.map((l) => (
+            <Link key={l.label} href={l.href} onClick={() => setOpen(false)} style={{ display: "block", padding: "14px 0", color: "#fff", textDecoration: "none", borderBottom: "1px solid rgba(255,255,255,0.08)", fontSize: 16 }}>
+              {l.label}
             </Link>
           ))}
-          <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 18 }}>
             {user ? (
               <>
-                <Link
-                  href="/analyze"
-                  onClick={() => setOpen(false)}
-                  style={{ textAlign: "center", padding: 12, borderRadius: 10, background: "var(--accent)", color: "#0B0D17", fontSize: 14, fontWeight: 700, textDecoration: "none", fontFamily: "var(--font-body)" }}
-                >
-                  Analyze My Face →
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  style={{ padding: 12, borderRadius: 10, border: "1px solid var(--border)", background: "transparent", color: "var(--text-muted)", fontSize: 14, cursor: "pointer", fontFamily: "var(--font-body)" }}
-                >
-                  Logout
-                </button>
+                <Link href="/analyze" onClick={() => setOpen(false)} className="btn btn-gold">Analyze</Link>
+                <button onClick={handleLogout} className="btn btn-outline-dark">Log out</button>
               </>
             ) : (
               <>
-                <Link
-                  href="/register"
-                  onClick={() => setOpen(false)}
-                  style={{ textAlign: "center", padding: 12, borderRadius: 10, background: "var(--accent)", color: "#0B0D17", fontSize: 14, fontWeight: 700, textDecoration: "none", fontFamily: "var(--font-body)" }}
-                >
-                  Get Started Free
-                </Link>
-                <Link
-                  href="/login"
-                  onClick={() => setOpen(false)}
-                  style={{ textAlign: "center", padding: 12, borderRadius: 10, border: "1px solid var(--border)", background: "transparent", color: "var(--text-muted)", fontSize: 14, textDecoration: "none", fontFamily: "var(--font-body)" }}
-                >
-                  Login
-                </Link>
+                <Link href="/login" onClick={() => setOpen(false)} className="btn btn-outline-dark">Log in</Link>
+                <Link href="/register" onClick={() => setOpen(false)} className="btn btn-gold">Get started</Link>
               </>
             )}
           </div>
         </div>
       )}
+
+      <style>{`
+        .nav-link-x{position:relative;padding:8px 14px;font-size:14px;font-weight:500;color:#b5b5b5;text-decoration:none;transition:color .2s}
+        .nav-link-x::after{content:"";position:absolute;left:14px;right:14px;bottom:2px;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .3s ease}
+        .nav-link-x:hover{color:#fff}
+        .nav-link-x:hover::after{transform:scaleX(1)}
+      `}</style>
     </header>
   );
 }
